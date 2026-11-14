@@ -139,7 +139,7 @@ export default function App() {
         {/* 가짜 집: 하드웨어 없이 시연·테스트할 때만 보인다 */}
         {source.kind === 'fake' && source.fake && (
           <section className="rounded-2xl border border-dashed border-neutral-400 p-4">
-            <p className="text-sm font-medium">시연용 가짜 집 <span className="font-normal text-neutral-500">— Firebase 주소가 없을 때만 보인다. {DEMO.warnSec}초 무활동 주의, {DEMO.alertSec}초 위험</span></p>
+            <p className="text-sm font-medium">시연용 가짜 집 <span className="font-normal text-neutral-500">— Firebase 주소가 없거나 주소 끝에 ?demo 를 붙였을 때만 보인다. {DEMO.warnSec}초 무활동 주의, {DEMO.alertSec}초 위험</span></p>
             <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
               <button className="btn" onClick={() => source.fake!.motion()}>손 흔들기</button>
               <button className="btn" onClick={() => source.fake!.sos()}>SOS</button>

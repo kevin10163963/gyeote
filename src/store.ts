@@ -27,8 +27,11 @@ export interface Source {
 
 const DB_URL = import.meta.env.VITE_FIREBASE_DB_URL as string | undefined
 
+/** 주소 뒤에 ?demo 를 붙이면 Firebase 가 있어도 가짜 집으로 연다 (발표 때 기기가 안 될 때 대비) */
+export const DEMO_FORCED = new URLSearchParams(location.search).has('demo')
+
 export function makeSource(): Source {
-  return DB_URL ? firebaseSource(DB_URL) : fakeSource()
+  return DB_URL && !DEMO_FORCED ? firebaseSource(DB_URL) : fakeSource()
 }
 
 // ───────── 진짜 Firebase ─────────
