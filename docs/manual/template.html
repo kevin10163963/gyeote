@@ -1,0 +1,417 @@
+<title>곁에 제작 설명서</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
+<style>
+/* 레이아웃: 작업대 위 한 장짜리 조립 설명서. 왼쪽 목차(넓을 때) + 본문 한 줄. 선 색은 실제 점퍼선 관례(빨강 전원, 검정 GND, 노랑 신호). */
+:root {
+  --paper: #f7f8f6; --sheet: #ffffff; --ink: #1d2433; --sub: #5b6475; --line: #dfe3e8;
+  --accent: #0f6b5c; --accent-soft: #e3f1ee; --warn: #b4540a; --warn-soft: #fbefe2; --danger: #b42318;
+  --w-power: #d0312d; --w-gnd: #2b2b2b; --w-sig: #d9a400; --w-3v: #e07b00; --w-data: #2f6fd6;
+  --code-bg: #f0f2f4;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #12161c; --sheet: #191e26; --ink: #e7eaef; --sub: #9aa3b2; --line: #2b323d;
+  --accent: #4cc2a9; --accent-soft: #15302b; --warn: #f0a050; --warn-soft: #33240f; --danger: #ff6b5e;
+  --w-gnd: #9aa3b2; --code-bg: #10141a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #12161c; --sheet: #191e26; --ink: #e7eaef; --sub: #9aa3b2; --line: #2b323d;
+  --accent: #4cc2a9; --accent-soft: #15302b; --warn: #f0a050; --warn-soft: #33240f; --danger: #ff6b5e;
+  --w-gnd: #9aa3b2; --code-bg: #10141a; color-scheme: dark }
+
+body { background: var(--paper); color: var(--ink); font: 15px/1.7 var(--f-body); }
+.wrap { max-width: 1060px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px; }
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 20px; } nav.toc { position: static !important; } }
+nav.toc { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); align-self: start; font-size: 13px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.toc a { color: var(--sub); text-decoration: none; display: block; padding: 3px 8px; border-radius: 6px; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--ink); background: var(--sheet); outline: none; }
+@media (max-width: 860px) { nav.toc ol { display: flex; flex-wrap: wrap; gap: 6px; } nav.toc a { border: 1px solid var(--line); } }
+main { min-width: 0; display: grid; gap: 28px; }
+header.top h1 { font-size: 30px; line-height: 1.25; margin: 0; text-wrap: balance; }
+header.top p { color: var(--sub); margin: 6px 0 0; max-width: 62ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { font-size: 12px; border: 1px solid var(--line); background: var(--sheet); border-radius: 999px; padding: 2px 10px; color: var(--sub); }
+section { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 22px 22px 24px; min-width: 0; }
+section > h2 { font-size: 20px; margin: 0 0 4px; display: flex; gap: 10px; align-items: baseline; text-wrap: balance; }
+section > h2 .no { font: 600 13px var(--f-mono); color: var(--accent); }
+section > .lead { color: var(--sub); margin: 0 0 14px; max-width: 65ch; }
+h3 { font-size: 16px; margin: 22px 0 8px; }
+p, li { max-width: 68ch; }
+ul, ol { padding-left: 20px; margin: 6px 0; }
+code, .mono { font-family: var(--f-mono); font-size: 0.92em; }
+:not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--sub); font-size: 12px; letter-spacing: 0.02em; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pin { font: 600 13px var(--f-mono); white-space: nowrap; }
+.wire { display: inline-block; width: 22px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+.caution { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+.caution strong, .note strong { display: block; margin-bottom: 2px; }
+.steps { counter-reset: s; list-style: none; padding: 0; display: grid; gap: 10px; }
+.steps > li { counter-increment: s; position: relative; padding-left: 38px; }
+.steps > li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--ink); color: var(--sheet); font: 600 13px/26px var(--f-mono); text-align: center; }
+.check { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; align-items: start; }
+.check input { margin-top: 6px; width: 16px; height: 16px; accent-color: var(--accent); }
+.check label { cursor: pointer; }
+.see { color: var(--accent); font-weight: 600; }
+figure { margin: 8px 0 0; }
+figure svg { width: 100%; height: auto; display: block; }
+figcaption { font-size: 12px; color: var(--sub); margin-top: 6px; }
+details.code { border: 1px solid var(--line); border-radius: 10px; margin-top: 12px; background: var(--code-bg); }
+details.code summary { cursor: pointer; padding: 10px 14px; font-weight: 600; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+details.code summary .file { font: 400 13px var(--f-mono); color: var(--sub); }
+pre { margin: 0; padding: 14px; overflow-x: auto; font: 12.5px/1.55 var(--f-mono); tab-size: 2; border-top: 1px solid var(--line); }
+button.copy { margin-left: auto; font: 600 12px var(--f-body); border: 1px solid var(--line); background: var(--sheet); color: var(--ink);
+  border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+button.copy:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); }
+.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.links a { display: block; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; text-decoration: none; color: var(--ink); background: var(--paper); }
+.links a span { display: block; font: 12px var(--f-mono); color: var(--sub); word-break: break-all; }
+.svg-ink { fill: var(--ink); } .svg-sub { fill: var(--sub); } .svg-box { fill: var(--paper); stroke: var(--line); }
+.svg-acc { fill: var(--accent-soft); stroke: var(--accent); } .svg-line { stroke: var(--sub); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="목차">
+  <ol>
+    <li><a href="#goal">0 무엇을 만드나</a></li>
+    <li><a href="#parts">1 준비물</a></li>
+    <li><a href="#system">2 전체 구조</a></li>
+    <li><a href="#wiring">3 배선</a></li>
+    <li><a href="#house">4 집 모형</a></li>
+    <li><a href="#microbit">5 마이크로비트 코드</a></li>
+    <li><a href="#esp32">6 ESP32 코드</a></li>
+    <li><a href="#verify">7 하나씩 확인</a></li>
+    <li><a href="#demo">8 1분 시연</a></li>
+    <li><a href="#tests">9 테스트 (보고서 4장)</a></li>
+    <li><a href="#trouble">10 안 될 때</a></li>
+    <li><a href="#links">11 링크</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="top">
+  <h1>곁에 제작 설명서</h1>
+  <p>혼자 사는 어르신 집의 움직임·약·넘어짐·SOS를 센서로 확인하고, 문제가 생기면 멀리 사는 가족 폰에 알리는 장치를 오늘 안에 만든다. 위에서부터 순서대로 따라 하면 된다.</p>
+  <div class="meta">
+    <span class="chip">KIS HCMC SW융합 해커톤 · 2026-11-14</span>
+    <span class="chip">ESP32 · 마이크로비트 V2 · Firebase · 웹</span>
+    <span class="chip">기능 동결 16:30 · 제출 19:30</span>
+  </div>
+</header>
+
+<section id="goal">
+  <h2><span class="no">0</span>무엇을 만드나</h2>
+  <p class="lead">심사위원 앞에서 아래 여섯 장면이 끊김 없이 나오면 완성이다. 위에서부터 만들고, 하나 될 때마다 영상을 찍어 둔다.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>장면</th><th>센서</th><th>ESP32 판단</th><th>가족 폰에 보이는 것</th></tr></thead>
+    <tbody>
+      <tr><td>손을 흔든다</td><td>인체감지(PIR)</td><td>마지막 활동 시각 갱신</td><td>"마지막 활동: 방금"</td></tr>
+      <tr><td>가만히 있는다</td><td>PIR</td><td>15초 주의 → 30초 위험 (시연 값)</td><td>노랑 → 빨강 경보, 부저</td></tr>
+      <tr><td>약통을 연다</td><td>적외선 장애물 센서</td><td>약 시간 창 안에 열렸나</td><td>아침·저녁 ✓ / ✗</td></tr>
+      <tr><td>목걸이를 떨어뜨린다</td><td>마이크로비트 가속도</td><td>10초 카운트다운, [괜찮아요] 안 누르면 경보</td><td>카운트다운 → "넘어지신 것 같아요"</td></tr>
+      <tr><td>SOS 버튼</td><td>버튼</td><td>바로 경보</td><td>빨간 경보 카드</td></tr>
+      <tr><td>가족이 [확인했어요]</td><td>(폰)</td><td>DB를 보고 부저 끔</td><td>"가족이 확인함", 응답 시간</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="parts">
+  <h2><span class="no">1</span>준비물</h2>
+  <p class="lead">1층 공학실 도우미 학생에게 빌린다. 개수가 1~2개뿐인 것부터 먼저.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>부품</th><th>개수</th><th>학교 재고</th><th>쓰는 곳</th></tr></thead>
+    <tbody>
+      <tr><td>ESP32 (Vietduino)</td><td class="num">1</td><td class="num">17</td><td>판단·와이파이 (성훈 대여 완료)</td></tr>
+      <tr><td>버튼</td><td class="num">2</td><td class="num">123</td><td>SOS, 괜찮아요 (성훈 3개 대여 완료)</td></tr>
+      <tr><td>인체감지(PIR)</td><td class="num">2</td><td class="num">13</td><td>거실 움직임 + 여분</td></tr>
+      <tr><td>적외선 장애물 센서</td><td class="num">1</td><td class="num">46</td><td>약통 뚜껑</td></tr>
+      <tr><td>부저</td><td class="num">1</td><td class="num">134</td><td>집 안 경보</td></tr>
+      <tr><td>RGB LED 모듈</td><td class="num">1</td><td class="num">120</td><td>상태 불빛 (저항이 기판에 붙은 모듈)</td></tr>
+      <tr><td>마이크로비트 V2</td><td class="num">2</td><td class="num">70</td><td>목걸이 1 + 받는 쪽 1</td></tr>
+      <tr><td><strong>3V AAA 배터리 소켓</strong></td><td class="num">1</td><td class="num"><strong>1</strong></td><td>목걸이 전원. 제일 먼저 빌린다</td></tr>
+      <tr><td>마이크로비트 확장 쉴드</td><td class="num">1</td><td class="num">1+3</td><td>받는 쪽 P0·GND 를 점퍼선으로</td></tr>
+      <tr><td>USB 전원 변압기</td><td class="num">1</td><td class="num">12</td><td>노트북 없이 ESP32 켜기</td></tr>
+      <tr><td>빵판, 점퍼선(전선 연결 젠더)</td><td class="num">2, 넉넉히</td><td class="num">53, 77</td><td></td></tr>
+      <tr><td>종이 상자, 가위, 테이프, 글루건</td><td></td><td>교실</td><td>집 모형</td></tr>
+      <tr><td>폰 핫스팟 (2.4GHz)</td><td></td><td></td><td>ESP32 와이파이</td></tr>
+    </tbody>
+  </table></div>
+  <div class="caution"><strong>저항이 교구 목록에 없다</strong>낱개 LED 대신 RGB LED <em>모듈</em>을 쓴다. 빌릴 때 모듈 기판에 작은 저항이 붙어 있는지, 핀 이름이 R·G·B·−(GND)인지 확인한다. +(공통 양극)로 적혀 있으면 코드 한 줄을 바꿔야 하니 말해 준다.</div>
+</section>
+
+<section id="system">
+  <h2><span class="no">2</span>전체 구조</h2>
+  <p class="lead">판단은 ESP32가 한다. 인터넷이 끊겨도 집 안 부저는 울려야 하기 때문이다. Firebase와 웹은 가족에게 알리는 길이다.</p>
+  <figure>
+    <svg viewBox="0 0 760 300" role="img" aria-label="센서와 마이크로비트가 ESP32로, ESP32가 Firebase로, Firebase가 가족 폰으로 이어지는 구조">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="svg-sub"/></marker></defs>
+      <rect x="10" y="20" width="190" height="150" rx="10" class="svg-box"/>
+      <text x="24" y="46" class="svg-ink" font-weight="700" font-size="15">어르신 집 센서</text>
+      <text x="24" y="72" class="svg-sub" font-size="13">PIR → IO35</text>
+      <text x="24" y="94" class="svg-sub" font-size="13">약통 적외선 → IO34</text>
+      <text x="24" y="116" class="svg-sub" font-size="13">SOS 버튼 → IO33</text>
+      <text x="24" y="138" class="svg-sub" font-size="13">괜찮아요 버튼 → IO32</text>
+      <rect x="10" y="195" width="190" height="90" rx="10" class="svg-box"/>
+      <text x="24" y="221" class="svg-ink" font-weight="700" font-size="15">마이크로비트 2개</text>
+      <text x="24" y="245" class="svg-sub" font-size="13">목걸이 ─무선→ 받는 쪽</text>
+      <text x="24" y="267" class="svg-sub" font-size="13">받는 쪽 P0 → IO4</text>
+      <rect x="260" y="80" width="170" height="140" rx="10" class="svg-acc"/>
+      <text x="276" y="108" class="svg-ink" font-weight="700" font-size="16">ESP32</text>
+      <text x="276" y="132" class="svg-sub" font-size="13">무활동·약 시간·낙상</text>
+      <text x="276" y="152" class="svg-sub" font-size="13">10초 판단</text>
+      <text x="276" y="178" class="svg-sub" font-size="13">부저 IO18</text>
+      <text x="276" y="198" class="svg-sub" font-size="13">LED IO19·IO23</text>
+      <rect x="490" y="80" width="120" height="140" rx="10" class="svg-box"/>
+      <text x="504" y="108" class="svg-ink" font-weight="700" font-size="15">Firebase</text>
+      <text x="504" y="132" class="svg-sub" font-size="13">실시간 DB</text>
+      <text x="504" y="152" class="svg-sub" font-size="13">/home 아래</text>
+      <rect x="650" y="80" width="100" height="140" rx="10" class="svg-box"/>
+      <text x="664" y="108" class="svg-ink" font-weight="700" font-size="15">가족 폰</text>
+      <text x="664" y="132" class="svg-sub" font-size="13">가족 화면</text>
+      <text x="664" y="152" class="svg-sub" font-size="13">[확인했어요]</text>
+      <line x1="200" y1="110" x2="256" y2="130" class="svg-line" stroke-width="2" marker-end="url(#ar)"/>
+      <line x1="200" y1="240" x2="256" y2="190" class="svg-line" stroke-width="2" marker-end="url(#ar)"/>
+      <line x1="430" y1="135" x2="486" y2="135" class="svg-line" stroke-width="2" marker-end="url(#ar)"/>
+      <text x="436" y="126" class="svg-sub" font-size="11">와이파이</text>
+      <line x1="610" y1="135" x2="646" y2="135" class="svg-line" stroke-width="2" marker-end="url(#ar)"/>
+      <line x1="646" y1="175" x2="614" y2="175" class="svg-line" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+      <line x1="486" y1="175" x2="434" y2="175" class="svg-line" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+      <text x="440" y="196" class="svg-sub" font-size="11">확인 → 부저 끔</text>
+    </svg>
+    <figcaption>실선: 상태가 가족에게 가는 길. 점선: 가족의 [확인했어요]가 집으로 돌아오는 길.</figcaption>
+  </figure>
+</section>
+
+<section id="wiring">
+  <h2><span class="no">3</span>배선</h2>
+  <p class="lead">전원을 뺀 상태에서 꽂는다. 빵판 + 줄에 5V, − 줄에 GND를 먼저 꽂고, 부품은 거기서 나눠 쓴다. 3V3 이 필요한 부품은 따로 표시했다.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>부품</th><th>부품 핀</th><th>ESP32</th><th>주의</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3">인체감지(PIR)</td><td>VCC</td><td class="pin"><span class="wire" style="background:var(--w-power)"></span>5V 핀</td><td rowspan="3">켠 뒤 30~60초는 값이 튄다(예열). 아래 "PIR 조절"대로 맞춘다.</td></tr>
+      <tr><td>OUT</td><td class="pin"><span class="wire" style="background:var(--w-sig)"></span>IO35</td></tr>
+      <tr><td>GND</td><td class="pin"><span class="wire" style="background:var(--w-gnd)"></span>GND</td></tr>
+      <tr><td rowspan="3">적외선 장애물 센서 (약통)</td><td>VCC</td><td class="pin"><span class="wire" style="background:var(--w-3v)"></span>3V3</td><td rowspan="3">5V 에 꽂으면 출력이 5V 가 돼 ESP32 핀에 무리가 간다. 꼭 3V3.</td></tr>
+      <tr><td>OUT</td><td class="pin"><span class="wire" style="background:var(--w-sig)"></span>IO34</td></tr>
+      <tr><td>GND</td><td class="pin"><span class="wire" style="background:var(--w-gnd)"></span>GND</td></tr>
+      <tr><td>SOS 버튼</td><td>대각선 다리 두 개</td><td class="pin">IO33 ↔ GND</td><td>내부 풀업. 저항 필요 없음</td></tr>
+      <tr><td>괜찮아요 버튼</td><td>대각선 다리 두 개</td><td class="pin">IO32 ↔ GND</td><td>내부 풀업</td></tr>
+      <tr><td rowspan="2">부저</td><td>+ (긴 다리)</td><td class="pin"><span class="wire" style="background:var(--w-sig)"></span>IO18</td><td rowspan="2">모듈이면 S(신호)를 IO18, VCC 3V3</td></tr>
+      <tr><td>−</td><td class="pin"><span class="wire" style="background:var(--w-gnd)"></span>GND</td></tr>
+      <tr><td rowspan="3">RGB LED 모듈</td><td>R</td><td class="pin"><span class="wire" style="background:var(--w-power)"></span>IO19</td><td rowspan="3">B 는 안 쓴다. 노랑 = 빨강+초록</td></tr>
+      <tr><td>G</td><td class="pin"><span class="wire" style="background:#2e9e4f"></span>IO23</td></tr>
+      <tr><td>− (GND)</td><td class="pin"><span class="wire" style="background:var(--w-gnd)"></span>GND</td></tr>
+      <tr><td rowspan="2">받는 쪽 마이크로비트</td><td>P0</td><td class="pin"><span class="wire" style="background:var(--w-data)"></span>IO4</td><td rowspan="2"><strong>GND 끼리 꼭 연결.</strong> 마이크로비트 전원은 USB(노트북이나 변압기)</td></tr>
+      <tr><td>GND</td><td class="pin"><span class="wire" style="background:var(--w-gnd)"></span>GND</td></tr>
+    </tbody>
+  </table></div>
+  <div class="caution"><strong>쓰면 안 되는 핀</strong><span class="mono">IO0, IO2, IO5, IO12, IO15</span>는 부팅할 때 쓰이는 핀이라 꽂으면 업로드나 부팅이 안 될 수 있다. 버튼은 <span class="mono">IO34·IO35</span>에 꽂지 않는다(입력 전용이고 내부 풀업이 없다).</div>
+
+  <h3>PIR 조절 (시연용)</h3>
+  <ul>
+    <li>뒷면 주황색 나사 두 개: <strong>Tx(시간)</strong>를 반시계 끝까지 돌려 가장 짧게(약 3초). <strong>Sx(감도)</strong>는 가운데에서 시작해 1~2m 에서 반응하게 맞춘다.</li>
+    <li>점퍼가 있으면 <strong>H(반복)</strong> 쪽에 둔다. 움직이는 동안 계속 HIGH 가 나온다.</li>
+    <li>센서 앞 반구가 사람 쪽을 향하게. 노트북 화면이나 사람 많은 쪽을 향하면 계속 감지된다.</li>
+  </ul>
+  <h3>약통 적외선 센서 조절</h3>
+  <ul>
+    <li>약통 바닥(안쪽)에 센서를 붙여 <strong>뚜껑을 위로 본다</strong>. 뚜껑을 닫으면 센서 LED 가 켜지고(물체 있음 = LOW), 열면 꺼져야 한다(= HIGH).</li>
+    <li>파란 나사로 감도를 맞춘다. 뚜껑 닫힘에서만 LED 가 켜질 때까지 돌린다.</li>
+    <li>반대로 동작하면 ESP32 코드의 <code>MED_OPEN_IS_HIGH</code> 를 <code>false</code> 로 바꾼다.</li>
+  </ul>
+</section>
+
+<section id="house">
+  <h2><span class="no">4</span>집 모형</h2>
+  <p class="lead">종이 상자 하나를 방 세 칸으로 나눈다. 센서는 실제 집에 붙일 자리에 붙인다. 심사위원이 한눈에 알아보게 방 이름을 크게 쓴다.</p>
+  <figure>
+    <svg viewBox="0 0 760 330" role="img" aria-label="집 모형 평면도: 거실에 PIR, 부엌 식탁에 약통, 침실 침대 옆에 SOS 버튼, 현관 옆에 곁에 박스">
+      <rect x="20" y="20" width="720" height="260" rx="6" fill="none" class="svg-line" stroke-width="3"/>
+      <line x1="300" y1="20" x2="300" y2="280" class="svg-line" stroke-width="2"/>
+      <line x1="520" y1="20" x2="520" y2="280" class="svg-line" stroke-width="2"/>
+      <text x="36" y="50" class="svg-ink" font-weight="700" font-size="16">거실</text>
+      <text x="316" y="50" class="svg-ink" font-weight="700" font-size="16">부엌</text>
+      <text x="536" y="50" class="svg-ink" font-weight="700" font-size="16">침실</text>
+      <circle cx="44" cy="150" r="16" class="svg-acc" stroke-width="2"/><text x="44" y="155" text-anchor="middle" font-size="11" class="svg-ink" font-weight="700">PIR</text>
+      <path d="M60 150 L200 95 L200 205 Z" fill="var(--accent)" opacity="0.12"/>
+      <text x="70" y="240" class="svg-sub" font-size="12">벽 높이 1m, 방 안쪽을 본다</text>
+      <rect x="350" y="120" width="140" height="80" rx="6" class="svg-box" stroke-width="1.5"/>
+      <text x="420" y="145" text-anchor="middle" class="svg-sub" font-size="12">식탁</text>
+      <rect x="395" y="155" width="50" height="34" rx="4" class="svg-acc" stroke-width="2"/><text x="420" y="177" text-anchor="middle" font-size="11" class="svg-ink" font-weight="700">약통</text>
+      <text x="320" y="240" class="svg-sub" font-size="12">바닥에 적외선 센서, 뚜껑을 본다</text>
+      <rect x="560" y="90" width="150" height="110" rx="6" class="svg-box" stroke-width="1.5"/>
+      <text x="635" y="150" text-anchor="middle" class="svg-sub" font-size="12">침대</text>
+      <circle cx="550" cy="215" r="14" fill="var(--danger)" opacity="0.85"/><text x="550" y="219" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">SOS</text>
+      <text x="572" y="240" class="svg-sub" font-size="12">침대 옆, 누워서 닿는 곳</text>
+      <rect x="230" y="290" width="300" height="34" rx="6" class="svg-acc" stroke-width="2"/>
+      <text x="380" y="312" text-anchor="middle" class="svg-ink" font-size="13" font-weight="700">곁에 박스: ESP32 · 부저 · LED · [괜찮아요]</text>
+    </svg>
+    <figcaption>곁에 박스는 집 밖(현관 옆)에 붙여 선이 보이지 않게 한다. 받는 쪽 마이크로비트도 박스 안에 둔다.</figcaption>
+  </figure>
+  <ul>
+    <li><strong>목걸이</strong>: 마이크로비트 + AAA 배터리 소켓을 작은 종이 케이스에 넣고 끈을 단다. 시연에서 떨어뜨리니 고무줄로 단단히 묶는다.</li>
+    <li><strong>[괜찮아요] 버튼</strong>은 어르신이 바로 누를 수 있게 크게 만든다(병뚜껑을 버튼 위에 붙이면 누르기 쉽다).</li>
+    <li>선은 상자 바닥 아래로 돌려 빵판까지 모은다. 선마다 마스킹 테이프로 이름표(PIR, SOS…)를 붙이면 고칠 때 빠르다.</li>
+  </ul>
+</section>
+
+<section id="microbit">
+  <h2><span class="no">5</span>마이크로비트 코드</h2>
+  <p class="lead">마이크로비트 두 개에 서로 다른 코드를 올린다. 무선 그룹 번호 <code>77</code> 이 둘이 같아야 한다. 다른 팀과 겹치면 둘 다 같은 다른 번호로 바꾼다.</p>
+  <ol class="steps">
+    <li>크롬에서 <a href="https://makecode.microbit.org" target="_blank" rel="noopener">makecode.microbit.org</a> → 새 프로젝트.</li>
+    <li>위쪽 <strong>JavaScript</strong> 탭 → 있는 코드를 전부 지우고 아래 코드를 붙여넣는다.</li>
+    <li>마이크로비트를 USB로 꽂고 <strong>다운로드</strong>(처음이면 "연결" 창에서 기기 선택).</li>
+    <li>목걸이용과 받는 쪽용을 각각 올린다. 올린 마이크로비트에 마스킹 테이프로 이름을 적는다.</li>
+  </ol>
+  <h3>낙상을 어떻게 판단하나 (보고서 3장 알고리즘)</h3>
+  <ol>
+    <li><strong>자유낙하</strong>: 가속도 크기가 평소(약 1000mg)에서 500mg 아래로 떨어진다. 몸이 잠깐 붕 뜬 상태다.</li>
+    <li><strong>충격</strong>: 그 뒤 0.8초 안에 2500mg 넘는 충격. 바닥에 부딪힌 순간이다.</li>
+    <li><strong>정지</strong>: 그 뒤 1.5초 동안 80% 이상이 거의 안 움직인다(800~1250mg). 쓰러져 있다.</li>
+  </ol>
+  <p>셋이 모두 맞을 때만 낙상으로 본다. 앉기·걷기는 1번이 없고, 넘어졌다 바로 일어나면 3번이 없다. 그래도 남는 잘못된 경보는 ESP32의 10초 [괜찮아요]가 한 번 더 거른다.</p>
+  <details class="code"><summary>목걸이 마이크로비트 <span class="file">firmware/microbit/pendant.ts</span><button class="copy" data-target="c-pendant" type="button">복사</button></summary><pre id="c-pendant">{{PENDANT}}</pre></details>
+  <details class="code"><summary>받는 쪽 마이크로비트 <span class="file">firmware/microbit/receiver.ts</span><button class="copy" data-target="c-receiver" type="button">복사</button></summary><pre id="c-receiver">{{RECEIVER}}</pre></details>
+  <div class="note"><strong>먼저 버튼으로 확인</strong>두 마이크로비트 모두 A 버튼이 "낙상 신호 바로 보내기"다. 목걸이 A → 받는 쪽 화면이 ✗ 로 바뀌면 무선 성공. 받는 쪽 A → ESP32가 1초마다 삑 하면 배선 성공.</div>
+</section>
+
+<section id="esp32">
+  <h2><span class="no">6</span>ESP32 코드</h2>
+  <p class="lead">판단 규칙은 전부 이 파일 안에 있다. 맨 위 "여기만 바꾼다" 부분의 와이파이 이름·비밀번호만 바꾸면 된다.</p>
+  <ol class="steps">
+    <li><strong>폰 핫스팟을 2.4GHz 로</strong> 켠다. 아이폰: 설정 → 개인용 핫스팟 → <em>호환성 최대화</em> 켜기. 안드로이드: 핫스팟 → 대역 2.4GHz.</li>
+    <li>Arduino IDE → 설정 → 추가 보드 관리자 URL 에 <code>https://espressif.github.io/arduino-esp32/package_esp32_index.json</code> → 보드 매니저에서 <strong>esp32 (Espressif)</strong> 설치.</li>
+    <li>도구 → 보드: <strong>ESP32 Dev Module</strong>, 포트: <code>/dev/cu.usbserial-…</code> 또는 <code>cu.wchusbserial…</code>.</li>
+    <li>아래 코드를 붙여넣고 <code>WIFI_SSID</code>, <code>WIFI_PASS</code> 를 바꾼 뒤 업로드.</li>
+    <li>시리얼 모니터를 <strong>115200</strong> 으로 열어 <span class="mono">와이파이 연결 중... 연결됨</span>, <span class="mono">곁에 시작</span> 이 나오는지 본다.</li>
+  </ol>
+  <div class="caution"><strong>업로드가 "Connecting....___" 에서 멈추면</strong>보드의 <strong>BOOT</strong> 버튼을 누른 채로 업로드를 다시 누르고, "Writing" 이 뜨면 뗀다.</div>
+  <h3>판단 규칙 요약</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>규칙</th><th>시연 (<code>DEMO = true</code>)</th><th>실제 (<code>false</code>)</th></tr></thead>
+    <tbody>
+      <tr><td>무활동 주의 / 위험</td><td class="num">15초 / 30초</td><td class="num">2시간 / 4시간 (근거 조사 후 조정)</td></tr>
+      <tr><td>밤에 무활동 경고 쉼</td><td>없음</td><td class="num">22시 ~ 6시</td></tr>
+      <tr><td>약 시간 창</td><td>켠 뒤 0~2분 아침, 2~4분 저녁 (4분마다 반복)</td><td class="num">8시·19시 ±30분</td></tr>
+      <tr><td>낙상 카운트다운</td><td class="num">10초</td><td class="num">10초</td></tr>
+      <tr><td>가족 확인 검사</td><td colspan="2">경보 중 1초마다 <code>/home/alert/acked</code></td></tr>
+      <tr><td>살아 있음 신호</td><td colspan="2">10초마다 <code>/home/status/heartbeat</code> (30초 끊기면 화면에 "연결 끊김")</td></tr>
+    </tbody>
+  </table></div>
+  <details class="code"><summary>ESP32 전체 코드 <span class="file">firmware/esp32/esp32.ino</span><button class="copy" data-target="c-esp32" type="button">복사</button></summary><pre id="c-esp32">{{ESP32}}</pre></details>
+  <p>{{COMPILE_NOTE}}</p>
+</section>
+
+<section id="verify">
+  <h2><span class="no">7</span>하나씩 확인</h2>
+  <p class="lead">가족 화면을 폰으로 열어 두고 위에서부터 하나씩. 되면 체크한다(이 폰에만 저장된다). 안 되면 다음으로 넘어가지 말고 <a href="#trouble">10 안 될 때</a>를 본다.</p>
+  <div class="check" id="checks">
+    <input type="checkbox" id="v1"><label for="v1">ESP32 를 켠다 → 시리얼에 "연결됨" → 가족 화면 오른쪽 위 <span class="see">"기기 신호 n초 전"</span> 초록.</label>
+    <input type="checkbox" id="v2"><label for="v2">PIR 앞에서 손을 흔든다(예열 1분 뒤) → <span class="see">"마지막 활동: 방금"</span>, 기록에 "움직임 감지".</label>
+    <input type="checkbox" id="v3"><label for="v3">15초 가만히 → <span class="see">노랑 "움직임이 뜸해요"</span>, 30초 → <span class="see">빨간 경보 + 부저</span>.</label>
+    <input type="checkbox" id="v4"><label for="v4">폰에서 [확인했어요] → <span class="see">1초 안에 부저가 꺼진다</span>, 기록에 "가족이 확인함".</label>
+    <input type="checkbox" id="v5"><label for="v5">SOS 버튼 → <span class="see">바로 빨간 경보</span> → [확인했어요]로 끄기.</label>
+    <input type="checkbox" id="v6"><label for="v6">ESP32 켠 뒤 2분 안에 약통을 연다 → <span class="see">아침 ✓</span>. 2~4분 사이 그냥 두면 4분에 <span class="see">저녁 ✗</span>.</label>
+    <input type="checkbox" id="v7"><label for="v7">받는 쪽 마이크로비트 A → ESP32 가 1초마다 삑, 화면에 <span class="see">카운트다운</span> → [괜찮아요] 누르면 취소.</label>
+    <input type="checkbox" id="v8"><label for="v8">다시 받는 쪽 A → 10초 그냥 둔다 → <span class="see">"넘어지신 것 같아요"</span>.</label>
+    <input type="checkbox" id="v9"><label for="v9">목걸이를 쿠션 위 30cm 에서 떨어뜨린다 → 받는 쪽 ✗ → 카운트다운 → 경보.</label>
+    <input type="checkbox" id="v10"><label for="v10">핫스팟을 끈다 → 집 안 경보(SOS)는 그대로 울리고, 1분 안에 화면이 <span class="see">"연결 끊김"</span>.</label>
+  </div>
+</section>
+
+<section id="demo">
+  <h2><span class="no">8</span>1분 시연</h2>
+  <ol class="steps">
+    <li>심사위원 폰으로 QR → 가족 화면. "베트남에 있는 우리가 서울 할머니를 보는 화면입니다."</li>
+    <li>집 모형 앞에서 손 흔들기 → "마지막 활동: 방금".</li>
+    <li>가만히 30초(그동안 약통 설명) → 노랑 → 빨강, 폰이 울린다 → [확인했어요] → 부저 꺼짐.</li>
+    <li>약통 열기 → 아침 ✓.</li>
+    <li>목걸이 떨어뜨리기 → 카운트다운 → 경보. "괜찮으시면 10초 안에 버튼 하나로 취소됩니다."</li>
+    <li>SOS 버튼 → 폰이 바로 빨개진다. 마지막에 아래 "어떻게 작동하나요" 그림을 보여 준다.</li>
+  </ol>
+  <div class="note"><strong>기기가 안 될 때</strong>주소 끝에 <code>?demo</code> 를 붙인 시연용 화면을 연다. 같은 흐름을 화면 버튼으로 보여 줄 수 있다. 실제 기기 영상은 미리 찍어 둔다.</div>
+</section>
+
+<section id="tests">
+  <h2><span class="no">9</span>테스트 (보고서 4장)</h2>
+  <p class="lead">16:30 기능 동결 뒤 각각 10번씩. 숫자는 그때그때 표에 적는다. 잘 안 된 횟수도 그대로 적어야 "개선 사항"을 쓸 수 있다.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>테스트</th><th>방법</th><th>기록할 것</th></tr></thead>
+    <tbody>
+      <tr><td>SOS → 폰 표시 시간</td><td>한 명은 버튼, 한 명은 폰 화면을 같은 영상에 담아 찍는다(초시계 앱을 같이 비추면 정확).</td><td>10번의 초, 평균, 최댓값</td></tr>
+      <tr><td>가족 확인 → 부저 꺼짐</td><td>[확인했어요] 누른 순간부터 부저가 멈출 때까지. 화면의 "n초 만에 확인"도 함께.</td><td>10번의 초</td></tr>
+      <tr><td>PIR 감지 거리</td><td>1m · 2m · 3m 에서 천천히 걷기 각 10번</td><td>거리별 감지 횟수 / 10</td></tr>
+      <tr><td>약통 열림 감지</td><td>뚜껑 열기 10번, 반쯤 열기 5번</td><td>감지 횟수, 놓친 횟수</td></tr>
+      <tr><td>낙상 감지율</td><td>쿠션 위 30cm 떨어뜨리기 10번</td><td>감지 / 10</td></tr>
+      <tr><td>낙상 오탐</td><td>목걸이 차고 앉기 10번, 걷기 10걸음, 흔들기 10번</td><td>잘못 감지한 횟수</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="trouble">
+  <h2><span class="no">10</span>안 될 때</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>증상</th><th>먼저 볼 것</th></tr></thead>
+    <tbody>
+      <tr><td>포트가 안 보인다</td><td>충전 전용 케이블인지(다른 케이블로), USB-C 젠더, 다른 포트. CH340 보드는 드라이버가 필요할 수 있다.</td></tr>
+      <tr><td>와이파이 "실패"</td><td>핫스팟이 2.4GHz 인지, 이름·비밀번호 오타(한글·띄어쓰기), 폰 화면이 꺼지면 핫스팟이 꺼지는지.</td></tr>
+      <tr><td>시리얼에 <span class="mono">[DB] … -&gt; 401</span></td><td>Firebase 규칙이 잠겨 있다. 콘솔 → Realtime Database → 규칙에서 대회 동안만 읽기·쓰기 허용.</td></tr>
+      <tr><td>가족 화면이 계속 "연결 끊김"</td><td>ESP32 시리얼에 heartbeat 오류가 있는지. 화면과 ESP32 가 같은 DB 주소인지.</td></tr>
+      <tr><td>PIR 가 계속 감지</td><td>예열 1분 기다리기, Tx 최소로, 센서가 사람·화면을 향하지 않게, 5V 전원 확인.</td></tr>
+      <tr><td>PIR 가 전혀 감지 안 함</td><td>OUT 이 IO35 인지, 시리얼 모니터에서 손 흔들 때 반응 없음이면 Sx(감도)를 시계 방향으로.</td></tr>
+      <tr><td>약이 반대로 기록된다(닫을 때 ✓)</td><td>코드의 <code>MED_OPEN_IS_HIGH</code> 를 반대로.</td></tr>
+      <tr><td>낙상 신호가 ESP32 에 안 온다</td><td>GND 공유, P0 → IO4, 받는 쪽 A 버튼으로 먼저 확인.</td></tr>
+      <tr><td>목걸이가 너무 자주 낙상</td><td><code>IMPACT_MG</code> 를 3000 으로 올리거나 정지 판단 비율을 0.9 로.</td></tr>
+      <tr><td>LED 색이 반대</td><td>공통 양극 모듈이다. 빨강·초록 출력에 <code>!</code> 를 붙이도록 동우에게 말한다.</td></tr>
+      <tr><td>업로드가 Connecting 에서 멈춤</td><td>BOOT 버튼 누른 채 업로드. 부팅 핀(IO0·2·5·12·15)에 아무것도 안 꽂혔는지.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="links">
+  <h2><span class="no">11</span>링크</h2>
+  <div class="links">
+    <a href="https://kevin10163963.github.io/gyeote/" target="_blank" rel="noopener">가족 화면 (실시간)<span>kevin10163963.github.io/gyeote</span></a>
+    <a href="https://kevin10163963.github.io/gyeote/?demo" target="_blank" rel="noopener">가족 화면 (시연용 가짜 집)<span>…/gyeote/?demo</span></a>
+    <a href="https://github.com/kevin10163963/gyeote" target="_blank" rel="noopener">코드 저장소<span>github.com/kevin10163963/gyeote</span></a>
+    <a href="https://github.com/kevin10163963/gyeote/blob/main/docs/firebase-%EC%95%BD%EC%86%8D.md" target="_blank" rel="noopener">Firebase 데이터 약속<span>docs/firebase-약속.md</span></a>
+  </div>
+</section>
+</main>
+</div>
+
+<script>
+document.querySelectorAll('button.copy').forEach((b) => {
+  b.addEventListener('click', async (e) => {
+    e.preventDefault(); e.stopPropagation()
+    const pre = document.getElementById(b.dataset.target)
+    try { await navigator.clipboard.writeText(pre.textContent); b.textContent = '복사됨' }
+    catch {
+      const r = document.createRange(); r.selectNodeContents(pre)
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r)
+      b.textContent = '선택됨 · ⌘C'
+    }
+    setTimeout(() => { b.textContent = '복사' }, 2000)
+  })
+})
+const KEY = 'gyeote.manual.checks'
+let saved = {}
+try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') } catch {}
+document.querySelectorAll('#checks input').forEach((c) => {
+  c.checked = !!saved[c.id]
+  c.addEventListener('change', () => { saved[c.id] = c.checked; try { localStorage.setItem(KEY, JSON.stringify(saved)) } catch {} })
+})
+</script>

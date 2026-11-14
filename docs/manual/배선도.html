@@ -1,0 +1,330 @@
+<title>곁에 배선도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
+<style>
+/* 레이아웃: 작업대 사진처럼. 맨 위 실제 보드 전체(쓰는 핀에 번호), 아래로 부품 하나 = 장면 하나(실물 부품 → 점퍼선 → 보드 핀 줄 확대). */
+:root {
+  --bg: #f4f3ef; --card: #ffffff; --ink: #1c2230; --sub: #5d6676; --line: #dedbd3; --chip: #efede7;
+  --bench: #e4dfd4; --accent: #0f6b5c; --warn: #b4540a; --warn-bg: #fbefe2;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121519; --card: #1a1e24; --ink: #e8ebf0; --sub: #9aa3b2; --line: #2c323b; --chip: #232931;
+  --bench: #d9d4c8; --accent: #4cc2a9; --warn: #f0a050; --warn-bg: #33240f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121519; --card: #1a1e24; --ink: #e8ebf0; --sub: #9aa3b2; --line: #2c323b; --chip: #232931;
+  --bench: #d9d4c8; --accent: #4cc2a9; --warn: #f0a050; --warn-bg: #33240f; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 15px/1.65 var(--f-body); }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 24px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 18px; }
+h1 { font-size: 28px; margin: 0; line-height: 1.25; text-wrap: balance; }
+.lead { color: var(--sub); margin: 4px 0 0; max-width: 65ch; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; min-width: 0; }
+.card h2 { margin: 0; font-size: 19px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; text-wrap: balance; }
+.card h2 .step { font: 700 14px var(--f-mono); color: #fff; background: var(--accent); border-radius: 999px; width: 28px; height: 28px; display: inline-grid; place-items: center; }
+.card h2 .where { font-size: 13px; font-weight: 400; color: var(--sub); }
+.card p { margin: 6px 0 0; max-width: 65ch; }
+.bench { background: var(--bench); border-radius: 10px; margin-top: 12px; overflow-x: auto; }
+.bench svg { display: block; width: 100%; min-width: 540px; height: auto; }
+.rule { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+.rule li { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; }
+.sw { width: 26px; height: 7px; border-radius: 4px; flex: none; display: inline-block; }
+.p { font: 600 13px var(--f-mono); background: var(--chip); border-radius: 5px; padding: 1px 8px; white-space: nowrap; }
+.warn { border-left: 3px solid var(--warn); background: var(--warn-bg); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-top: 12px; font-size: 14px; }
+.warn b { display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--sub); margin-top: 10px; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.checks { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; margin-top: 10px; }
+.checks input { width: 16px; height: 16px; margin-top: 5px; accent-color: var(--accent); }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+<header>
+  <h1>곁에 배선도</h1>
+  <p class="lead">실물 부품 그림 그대로 따라 꽂는다. <b>꽂는 동안은 ESP32 USB를 뺀다.</b> 0번(전원 줄)부터 순서대로, 한 부품이 끝날 때마다 그림 아래 목록을 손가락으로 짚어 확인한다.</p>
+  <div class="legend" aria-label="점퍼선 색">
+    <span><i class="sw" style="background:#d6312b"></i>빨강 5V</span>
+    <span><i class="sw" style="background:#ef7d00"></i>주황 3.3V</span>
+    <span><i class="sw" style="background:#262626"></i>검정 GND</span>
+    <span><i class="sw" style="background:#e3b400"></i>나머지 색 = 신호선</span>
+  </div>
+</header>
+
+<section class="card">
+  <h2>ESP32 보드 전체: 쓰는 핀</h2>
+  <p>노란 동그라미가 쓰는 핀, 옆 번호가 아래 장면 번호다. 그림은 가장 흔한 30핀 ESP32 보드 모양이다. <b>Vietduino 는 핀 위치가 다를 수 있으니, 위치가 아니라 보드에 인쇄된 이름(IO35, 3V3…)을 찾아 꽂는다.</b></p>
+  <div class="bench" id="overview"></div>
+</section>
+
+<div id="scenes" style="display:grid;gap:18px"></div>
+
+<section class="card">
+  <h2>전원 넣기 전 확인</h2>
+  <div class="checks">
+    <input type="checkbox" id="k1"><label for="k1">빨강(5V) 줄과 검정(GND) 줄이 서로 닿지 않는다.</label>
+    <input type="checkbox" id="k2"><label for="k2">적외선 센서 VCC 는 <b>3V3</b> 에 꽂았다 (5V 아님).</label>
+    <input type="checkbox" id="k3"><label for="k3">빵판 위·아래 파란(−) 줄이 둘 다 ESP32 GND 와 이어져 있다.</label>
+    <input type="checkbox" id="k4"><label for="k4">마이크로비트 GND 와 ESP32 GND 가 이어져 있다.</label>
+    <input type="checkbox" id="k5"><label for="k5">버튼은 빵판 가운데 홈을 가로질러 꽂았다.</label>
+    <input type="checkbox" id="k6"><label for="k6">IO0 · IO2 · IO5 · IO12 · IO15 에는 아무것도 없다.</label>
+  </div>
+  <p style="margin-top:12px">다 되면 USB를 꽂고 <a href="https://claude.ai/artifact/G2RCEhxnoBYxyvG3byaXH5" target="_blank" rel="noopener">제작 설명서</a>의 "7 하나씩 확인"으로 간다.</p>
+</section>
+</div>
+
+<script>
+const W = { red: '#d6312b', orange: '#ef7d00', black: '#262626', yellow: '#e3b400', green: '#2e9e4f', blue: '#2f6fd6', purple: '#8a4fd6' }
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+const MONO = 'style="font-family:var(--f-mono)"'
+
+// 30핀 ESP32 보드 핀 순서 (안테나가 위, 위→아래)
+const LEFT = ['EN', 'VP', 'VN', 'IO34', 'IO35', 'IO32', 'IO33', 'IO25', 'IO26', 'IO27', 'IO14', 'IO12', 'IO13', 'GND', 'VIN·5V']
+const RIGHT = ['IO23', 'IO22', 'TX0', 'RX0', 'IO21', 'IO19', 'IO18', 'IO5', 'TX2', 'RX2', 'IO4', 'IO2', 'IO15', 'GND', '3V3']
+const BAD = new Set(['IO0', 'IO2', 'IO5', 'IO12', 'IO15'])
+
+const scenes = [
+  { n: 0, name: '빵판 전원 줄 만들기', where: '먼저 이것부터', comp: 'espBottom',
+    note: '빵판 가장자리의 긴 두 줄(빨간 선 +, 파란 선 −)을 전원 길로 쓴다. 위쪽 + 는 5V, 아래쪽 + 는 3.3V. − 줄 두 개는 모두 GND.',
+    targets: [{ rail: 'top' }, { rail: 'bot' }],
+    wires: [['VIN·5V', 'top+', W.red], ['GND', 'top-', W.black], ['3V3', 'bot+', W.orange], ['GND2', 'bot-', W.black]],
+    warn: 'Vietduino 는 "5V" 로 적힌 핀을 쓴다. "VIN" 은 7~12V 를 넣는 입력 핀이다. (30핀 보드는 VIN 이 USB 5V 와 이어져 있어 VIN 을 쓴다.)' },
+  { n: 1, name: '인체감지 센서 (PIR)', where: '거실 벽', comp: 'pir',
+    note: '흰 반구를 살짝 돌려 빼면 다리 옆에 VCC · OUT · GND 가 적혀 있다. 그 글자를 보고 꽂는다. 모듈 다리에는 암-수 점퍼선(한쪽이 구멍)을 끼운다.',
+    targets: [{ rail: 'top' }, { side: 'L', from: 2, to: 6 }],
+    wires: [['VCC', 'top+', W.red], ['OUT', 'IO35', W.yellow], ['GND', 'top-', W.black]],
+    warn: '켠 뒤 1분은 예열이라 마구 감지된다. 뒷면 주황 나사 중 Tx 는 반시계 끝까지(가장 짧게).' },
+  { n: 2, name: '적외선 장애물 센서', where: '약통 바닥, 뚜껑을 본다', comp: 'ir',
+    note: '파란 기판 끝 다리: VCC · GND · OUT. 뚜껑을 닫으면 기판의 작은 초록 LED 가 켜지게 파란 나사로 맞춘다.',
+    targets: [{ rail: 'bot' }, { side: 'L', from: 1, to: 5 }],
+    wires: [['VCC', 'bot+', W.orange], ['GND', 'bot-', W.black], ['OUT', 'IO34', W.green]],
+    warn: '꼭 3.3V(아래 + 줄). 5V 에 꽂으면 신호도 5V 가 돼 ESP32 핀이 상할 수 있다.' },
+  { n: 3, name: 'SOS 버튼', where: '침대 옆', comp: 'button', label: 'SOS',
+    note: '다리 4개 버튼을 빵판 가운데 홈을 가로질러 꽂는다. 노란 동그라미 두 다리(대각선)와 같은 세로줄 구멍에서 선을 뺀다. 저항은 필요 없다.',
+    targets: [{ rail: 'top' }, { side: 'L', from: 4, to: 8 }],
+    wires: [['A', 'IO33', W.purple], ['B', 'top-', W.black]] },
+  { n: 4, name: '괜찮아요 버튼', where: '곁에 박스 앞, 크게', comp: 'button', label: 'OK',
+    note: 'SOS 버튼과 똑같이 꽂는다. 버튼 위에 병뚜껑을 붙이면 어르신이 누르기 쉽다.',
+    targets: [{ rail: 'top' }, { side: 'L', from: 3, to: 7 }],
+    wires: [['A', 'IO32', W.blue], ['B', 'top-', W.black]] },
+  { n: 5, name: '부저', where: '곁에 박스 안', comp: 'buzzer',
+    note: '윗면에 + 표시가 있는 쪽 다리(긴 다리)가 신호. 다리 3개짜리 모듈이면 S 를 IO18, + 를 3.3V, − 를 GND.',
+    targets: [{ rail: 'top' }, { side: 'R', from: 4, to: 8 }],
+    wires: [['+', 'IO18', W.yellow], ['−', 'top-', W.black]] },
+  { n: 6, name: 'RGB LED 모듈', where: '곁에 박스 앞면', comp: 'rgb',
+    note: '다리 이름 R · G · B · − (모듈마다 순서가 다르니 글자를 본다). B 는 안 꽂는다. 노랑 = 빨강+초록이 같이 켜진 것.',
+    targets: [{ rail: 'top' }, { side: 'R', from: 0, to: 6 }],
+    wires: [['R', 'IO19', W.red], ['G', 'IO23', W.green], ['−', 'top-', W.black]],
+    warn: '− 대신 + 로 적힌 모듈(공통 양극)이면 + 를 3.3V 에 꽂고 동우에게 말한다(코드 한 줄 바꿈).' },
+  { n: 7, name: '받는 쪽 마이크로비트', where: '곁에 박스 안', comp: 'microbit',
+    note: '아래쪽 금속 고리 중 "0"(P0) 과 "GND" 를 악어 클립으로 집고, 클립 반대쪽을 점퍼선으로 잇는다. 확장 쉴드가 있으면 P0 · G 핀을 쓴다. 마이크로비트 전원은 따로 USB.',
+    targets: [{ rail: 'top' }, { side: 'R', from: 8, to: 12 }],
+    wires: [['P0', 'IO4', W.blue], ['GND', 'top-', W.black]],
+    warn: 'GND 를 안 이으면 신호가 안 전해진다. 제일 많이 빠뜨리는 선이다.' },
+]
+
+// ───────── 그리기 도구 ─────────
+const holes = (x0, y, n, gap = 14) => Array.from({ length: n }, (_, i) => `<rect x="${x0 + i * gap - 3}" y="${y - 3}" width="6" height="6" rx="1" fill="#3b3b3b" opacity="0.55"/>`).join('')
+
+function rail(x, y, which) {
+  const w = 210, h = 66, k = which === 'top' ? 'top' : 'bot'
+  const yp = y + 32, ym = y + 52
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="#f3f2ec" stroke="#bdb7aa"/>`
+  s += `<text x="${x + 8}" y="${y + 15}" font-size="10.5" fill="#555">빵판 ${which === 'top' ? '위쪽' : '아래쪽'} 전원 줄 · + = ${which === 'top' ? '5V' : '3.3V'}</text>`
+  s += `<line x1="${x + 26}" x2="${x + w - 8}" y1="${yp - 9}" y2="${yp - 9}" stroke="#d6312b" stroke-width="1.5"/>`
+  s += `<line x1="${x + 26}" x2="${x + w - 8}" y1="${ym + 9}" y2="${ym + 9}" stroke="#2a5bd7" stroke-width="1.5"/>`
+  s += `<text x="${x + 10}" y="${yp + 5}" font-size="14" font-weight="700" fill="#d6312b">+</text><text x="${x + 10}" y="${ym + 5}" font-size="14" font-weight="700" fill="#2a5bd7">−</text>`
+  s += holes(x + 32, yp, 13) + holes(x + 32, ym, 13)
+  return { s, h, pts: { [k + '+']: [x + 60, yp], [k + '-']: [x + 74, ym] } }
+}
+
+function header(x, y, side, from, to, used) {
+  const names = (side === 'L' ? LEFT : RIGHT).slice(from, to + 1)
+  const pitch = 26, h = names.length * pitch + 36, w = 210, pts = {}
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="#16181b"/>`
+  s += `<text x="${x + 10}" y="${y + 15}" font-size="10.5" fill="#9aa0a8">ESP32 ${side === 'L' ? '왼쪽' : '오른쪽'} 핀 줄 (확대)</text>`
+  if (from > 0) s += `<text x="${x + 23}" y="${y + 27}" font-size="11" fill="#6b7078">⋮</text>`
+  names.forEach((nm, i) => {
+    const py = y + 36 + i * pitch, px = x + 26, on = used.has(nm)
+    s += `<rect x="${px - 8}" y="${py - 8}" width="16" height="16" rx="2" fill="#2a2a2a" stroke="#000"/><rect x="${px - 3}" y="${py - 3}" width="6" height="6" fill="#d4af37"/>`
+    if (on) s += `<circle cx="${px}" cy="${py}" r="11" fill="none" stroke="#ffd84d" stroke-width="2.5"/>`
+    s += `<text x="${px + 20}" y="${py + 5}" font-size="${on ? 14 : 12}" font-weight="${on ? 700 : 500}" fill="${on ? '#ffffff' : BAD.has(nm) ? '#e07b6f' : '#8d939b'}" ${MONO}>${esc(nm)}${BAD.has(nm) ? '  ✕ 비움' : ''}</text>`
+    pts[nm] = [px, py]
+  })
+  if (to < 14) s += `<text x="${x + 23}" y="${y + h - 4}" font-size="11" fill="#6b7078">⋮</text>`
+  return { s, h, pts }
+}
+
+function stub(x, y, label) {
+  return `<rect x="${x - 10}" y="${y - 6}" width="10" height="12" rx="1" fill="#111"/>` +
+    `<rect x="${x}" y="${y - 3}" width="14" height="6" rx="1" fill="#d4af37" stroke="#9c7d1f" stroke-width="0.8"/>` +
+    `<text x="${x - 14}" y="${y + 4}" font-size="11" font-weight="700" text-anchor="end" fill="#ffffff" ${MONO}>${esc(label)}</text>`
+}
+function withStubs(s, pins, dx = 2) {
+  let out = s
+  const ends = {}
+  for (const [k, [x, y]] of Object.entries(pins)) { out += stub(x + dx, y, k); ends[k] = [x + dx + 14, y] }
+  return { s: out, ends }
+}
+
+// 실물 부품 (핀은 오른쪽을 향한다)
+const COMP = {
+  pir() {
+    let s = `<rect x="0" y="0" width="150" height="150" rx="8" fill="#1f6b37" stroke="#14492a"/>`
+    for (const [x, y] of [[10, 10], [140, 10], [10, 140], [140, 140]]) s += `<circle cx="${x}" cy="${y}" r="4" fill="#0e3a1f"/>`
+    s += `<circle cx="72" cy="75" r="58" fill="#ecebe6" stroke="#cfcdc5" stroke-width="2"/>`
+    for (let r = 14; r < 58; r += 11) s += `<circle cx="72" cy="75" r="${r}" fill="none" stroke="#d3d1c9"/>`
+    for (let a = 0; a < 360; a += 30) { const t = a * Math.PI / 180; s += `<line x1="72" y1="75" x2="${(72 + 58 * Math.cos(t)).toFixed(1)}" y2="${(75 + 58 * Math.sin(t)).toFixed(1)}" stroke="#d3d1c9"/>` }
+    s += `<text x="0" y="170" font-size="11" fill="#4d4d4d">인체감지 HC-SR501</text>`
+    const r = withStubs(s, { VCC: [150, 50], OUT: [150, 75], GND: [150, 100] })
+    return { s: r.s, w: 170, h: 176, pins: r.ends }
+  },
+  ir() {
+    let s = `<rect x="30" y="16" width="170" height="66" rx="5" fill="#1d4fa0" stroke="#123270"/>`
+    s += `<rect x="2" y="26" width="32" height="18" rx="9" fill="#e9eef5" stroke="#9fb0c8"/><rect x="2" y="54" width="32" height="18" rx="9" fill="#24262b" stroke="#000"/>`
+    s += `<rect x="78" y="30" width="26" height="26" rx="3" fill="#2f74d0" stroke="#fff"/><path d="M85 43 h12 M91 37 v12" stroke="#fff" stroke-width="2.5"/>`
+    s += `<rect x="118" y="28" width="8" height="5" fill="#ff5148"/><rect x="118" y="64" width="8" height="5" fill="#3ddc6f"/>`
+    s += `<text x="130" y="34" font-size="9" fill="#cfe0ff">PWR</text><text x="130" y="70" font-size="9" fill="#cfe0ff">OBS</text>`
+    s += `<text x="0" y="104" font-size="11" fill="#4d4d4d">적외선 장애물 센서 FC-51 (왼쪽 끝 = 센서 눈)</text>`
+    const r = withStubs(s, { VCC: [200, 32], GND: [200, 49], OUT: [200, 66] })
+    return { s: r.s, w: 220, h: 110, pins: r.ends }
+  },
+  button(label) {
+    let s = `<rect x="0" y="0" width="176" height="156" rx="6" fill="#f3f2ec" stroke="#bdb7aa"/>`
+    s += `<rect x="0" y="71" width="176" height="14" fill="#e2dfd6"/><text x="168" y="82" font-size="9" text-anchor="end" fill="#8a857a">가운데 홈</text>`
+    for (let r = 0; r < 4; r++) s += holes(18, 16 + r * 14, 11) + holes(18, 100 + r * 14, 11)
+    s += `<rect x="56" y="42" width="60" height="72" rx="4" fill="#232323"/><circle cx="86" cy="78" r="19" fill="${label === 'SOS' ? '#c8322b' : '#2f6fd6'}" stroke="#111" stroke-width="2"/>`
+    s += `<text x="86" y="83" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">${label}</text>`
+    for (const [x, y] of [[60, 44], [116, 44], [60, 114], [116, 114]]) s += `<rect x="${x - 3}" y="${y - 3}" width="6" height="6" fill="#bdbdbd"/>`
+    s += `<circle cx="60" cy="44" r="8" fill="none" stroke="#e3b400" stroke-width="2.5"/><circle cx="116" cy="114" r="8" fill="none" stroke="#e3b400" stroke-width="2.5"/>`
+    s += `<text x="0" y="174" font-size="11" fill="#4d4d4d">버튼은 홈을 가로질러 · 노란 동그라미 = 쓰는 다리</text>`
+    return { s, w: 176, h: 180, pins: { A: [60, 16], B: [116, 142] }, dir: { A: 'up', B: 'down' } }
+  },
+  buzzer() {
+    let s = `<circle cx="66" cy="66" r="58" fill="#1b1b1b" stroke="#000"/><circle cx="66" cy="66" r="40" fill="none" stroke="#2c2c2c"/><circle cx="66" cy="66" r="9" fill="#0a0a0a"/>`
+    s += `<text x="98" y="38" font-size="20" font-weight="700" fill="#dcdcdc">+</text>`
+    s += `<path d="M120 54 H158" stroke="#b8b8b8" stroke-width="3" stroke-linecap="round"/><path d="M120 80 H146" stroke="#b8b8b8" stroke-width="3" stroke-linecap="round"/>`
+    s += `<text x="160" y="46" font-size="10.5" fill="#4d4d4d">긴 다리 = +</text><text x="148" y="96" font-size="10.5" fill="#4d4d4d">짧은 다리 = −</text>`
+    s += `<text x="0" y="144" font-size="11" fill="#4d4d4d">부저 (위에서 본 모습)</text>`
+    return { s, w: 220, h: 150, pins: { '+': [158, 54], '−': [146, 80] } }
+  },
+  rgb() {
+    let s = `<rect x="0" y="8" width="124" height="100" rx="5" fill="#141414" stroke="#000"/>`
+    s += `<circle cx="54" cy="58" r="27" fill="#f5f2ea" stroke="#d8d3c5"/><circle cx="54" cy="58" r="16" fill="#fffdf6"/>`
+    s += `<text x="0" y="128" font-size="11" fill="#4d4d4d">RGB LED 모듈 (B 다리는 안 꽂음)</text>`
+    const r = withStubs(s, { R: [124, 28], G: [124, 48], B: [124, 68], '−': [124, 88] })
+    return { s: r.s, w: 140, h: 132, pins: r.ends }
+  },
+  microbit() {
+    let s = `<rect x="0" y="0" width="176" height="140" rx="10" fill="#1a1a1a" stroke="#000"/>`
+    const face = (r, c) => (r === 1 && (c === 1 || c === 3)) || (r === 3 && c > 0 && c < 4)
+    for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) s += `<rect x="${60 + c * 12}" y="${20 + r * 12}" width="4" height="7" fill="${face(r, c) ? '#ff3b30' : '#3a1513'}"/>`
+    s += `<circle cx="28" cy="54" r="11" fill="#2c2c2c" stroke="#555"/><text x="28" y="58" text-anchor="middle" font-size="10" fill="#bbb">A</text>`
+    s += `<circle cx="148" cy="54" r="11" fill="#2c2c2c" stroke="#555"/><text x="148" y="58" text-anchor="middle" font-size="10" fill="#bbb">B</text>`
+    s += `<rect x="0" y="100" width="176" height="40" fill="#c8a24a"/>`
+    for (const [k, x, r] of [['0', 22, 12], ['1', 62, 12], ['2', 102, 12], ['3V', 136, 9], ['GND', 160, 9]]) s += `<circle cx="${x}" cy="116" r="${r}" fill="#1a1a1a"/><text x="${x}" y="137" text-anchor="middle" font-size="9" font-weight="700" fill="#1a1a1a">${k}</text>`
+    s += `<circle cx="22" cy="116" r="16" fill="none" stroke="#2f6fd6" stroke-width="3"/><circle cx="160" cy="116" r="13" fill="none" stroke="#262626" stroke-width="3"/>`
+    s += `<text x="0" y="160" font-size="11" fill="#4d4d4d">마이크로비트 · 고리 0 과 GND 에 악어 클립</text>`
+    return { s, w: 176, h: 166, pins: { P0: [22, 116], GND: [160, 116] }, dir: { P0: 'down', GND: 'down' } }
+  },
+  espBottom() {
+    let s = `<rect x="0" y="0" width="156" height="164" rx="6" fill="#16181b"/>`
+    s += `<rect x="48" y="140" width="60" height="24" rx="3" fill="#b9bcc2" stroke="#7e8288"/><text x="78" y="156" text-anchor="middle" font-size="9" fill="#333">USB</text>`
+    s += `<rect x="24" y="104" width="22" height="14" rx="2" fill="#2b2b2b"/><text x="35" y="130" text-anchor="middle" font-size="8" fill="#9aa0a8">EN</text>`
+    s += `<rect x="110" y="104" width="22" height="14" rx="2" fill="#2b2b2b"/><text x="121" y="130" text-anchor="middle" font-size="8" fill="#9aa0a8">BOOT</text>`
+    const pin = (x, y, k, right, dim) => `<rect x="${x - 7}" y="${y - 7}" width="14" height="14" fill="#2a2a2a"/><rect x="${x - 3}" y="${y - 3}" width="6" height="6" fill="#d4af37"/>` +
+      `<text x="${right ? x - 12 : x + 12}" y="${y + 4}" text-anchor="${right ? 'end' : 'start'}" font-size="10.5" font-weight="700" fill="${dim ? '#6b7078' : '#fff'}" ${MONO}>${k}</text>`
+    s += pin(12, 22, 'IO13', false, true) + pin(12, 50, 'GND', false) + pin(12, 78, 'VIN·5V', false)
+    s += pin(144, 22, 'IO15', true, true) + pin(144, 50, 'GND', true) + pin(144, 78, '3V3', true)
+    s += `<circle cx="12" cy="50" r="10" fill="none" stroke="#ffd84d" stroke-width="2"/><circle cx="12" cy="78" r="10" fill="none" stroke="#ffd84d" stroke-width="2"/>`
+    s += `<circle cx="144" cy="50" r="10" fill="none" stroke="#ffd84d" stroke-width="2"/><circle cx="144" cy="78" r="10" fill="none" stroke="#ffd84d" stroke-width="2"/>`
+    s += `<text x="0" y="182" font-size="11" fill="#4d4d4d">ESP32 아래쪽 (USB 쪽)</text>`
+    return { s, w: 156, h: 186, pins: { GND: [12, 50], 'VIN·5V': [12, 78], GND2: [144, 50], '3V3': [144, 78] }, dir: { GND: 'down', 'VIN·5V': 'down', GND2: 'right', '3V3': 'right' } }
+  },
+}
+
+function wire(a, b, color, dir = 'right') {
+  const [x1, y1] = a, [x2, y2] = b
+  const c1 = dir === 'up' ? [x1 + 20, y1 - 90] : dir === 'down' ? [x1 + 30, y1 + 90] : [x1 + 100, y1]
+  const d = `M${x1} ${y1} C ${c1[0]} ${c1[1]}, ${x2 - 120} ${y2}, ${x2} ${y2}`
+  const plug = (x, y) => `<rect x="${x - 6}" y="${y - 5}" width="12" height="10" rx="1.5" fill="#111"/><rect x="${x - 2}" y="${y - 2}" width="4" height="4" fill="#d4af37"/>`
+  return `<path d="${d}" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="8.5" stroke-linecap="round"/>` +
+    `<path d="${d}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/>` +
+    `<path d="${d}" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" transform="translate(-1,-1.5)"/>` +
+    plug(x1, y1) + plug(x2, y2)
+}
+
+function scene(sc) {
+  const comp = COMP[sc.comp](sc.label)
+  const used = new Set(sc.wires.map((w) => w[1]))
+  let ry = 18, right = '', pts = {}
+  for (const t of sc.targets) {
+    const r = t.rail ? rail(520, ry, t.rail) : header(520, ry, t.side, t.from, t.to, used)
+    right += r.s; Object.assign(pts, r.pts); ry += r.h + 18
+  }
+  const H = Math.max(ry, comp.h + 60)
+  const cx = 30, cy = Math.max(30, Math.round((H - comp.h) / 2))
+  const wires = sc.wires.map(([p, t, color]) => {
+    const [px, py] = comp.pins[p]
+    return wire([cx + px, cy + py], pts[t], color, comp.dir?.[p] ?? 'right')
+  }).join('')
+  return `<svg viewBox="0 0 750 ${H}" role="img" aria-label="${esc(sc.name)} 배선 그림"><g transform="translate(${cx},${cy})">${comp.s}</g>${right}${wires}</svg>`
+}
+
+const colorName = { [W.red]: '빨강', [W.orange]: '주황', [W.black]: '검정', [W.yellow]: '노랑', [W.green]: '초록', [W.blue]: '파랑', [W.purple]: '보라' }
+const targetName = (t) => ({ 'top+': '빵판 위 + 줄 (5V)', 'top-': '빵판 − 줄 (GND)', 'bot+': '빵판 아래 + 줄 (3.3V)', 'bot-': '빵판 아래 − 줄 (GND)' })[t] ?? `ESP32 ${t}`
+const pinName = (sc, p) => sc.comp === 'button' ? (p === 'A' ? '위쪽 노란 동그라미 다리 줄' : '아래쪽 노란 동그라미 다리 줄') : sc.comp === 'espBottom' ? `ESP32 ${p === 'GND2' ? 'GND (오른쪽 줄)' : p === 'GND' ? 'GND (왼쪽 줄)' : p}` : sc.comp === 'microbit' ? `마이크로비트 ${p === 'P0' ? '고리 0' : '고리 GND'}` : p
+
+document.getElementById('scenes').innerHTML = scenes.map((sc) => `
+  <section class="card" id="s${sc.n}">
+    <h2><span class="step">${sc.n}</span>${esc(sc.name)}<span class="where">${esc(sc.where)}</span></h2>
+    <p>${esc(sc.note)}</p>
+    <div class="bench">${scene(sc)}</div>
+    <ul class="rule">${sc.wires.map(([p, t, c]) => `<li><i class="sw" style="background:${c}"></i>${colorName[c]} 선: <span class="p">${esc(pinName(sc, p))}</span> → <span class="p">${esc(targetName(t))}</span></li>`).join('')}</ul>
+    ${sc.warn ? `<div class="warn"><b>주의</b>${esc(sc.warn)}</div>` : ''}
+  </section>`).join('')
+
+// 보드 전체 그림: 쓰는 핀에 장면 번호
+;(function overview() {
+  const use = { 'VIN·5V': 0, GND: 'g', IO35: 1, IO34: 2, IO33: 3, IO32: 4, IO18: 5, IO19: 6, IO23: 6, IO4: 7, '3V3': 0 }
+  const tag = { 0: '#ef7d00', 1: '#e3b400', 2: '#2e9e4f', 3: '#8a4fd6', 4: '#2f6fd6', 5: '#e3b400', 6: '#d6312b', 7: '#2f6fd6', g: '#262626' }
+  const bx = 250, by = 16, bw = 250, top = 250, pitch = 28, bh = top + 15 * pitch + 70
+  let s = `<svg viewBox="0 0 750 ${bh + 48}" role="img" aria-label="ESP32 보드 전체, 쓰는 핀에 장면 번호">`
+  s += `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="10" fill="#16181b"/>`
+  s += `<rect x="${bx + 55}" y="${by + 16}" width="140" height="200" rx="4" fill="#c9ccd1" stroke="#8d9198"/>`
+  s += `<path d="M${bx + 72} ${by + 34} h22 v12 h-16 v12 h16 v12 h-16 v12 h22" fill="none" stroke="#7b7f86" stroke-width="3"/>`
+  s += `<text x="${bx + 125}" y="${by + 150}" text-anchor="middle" font-size="12" fill="#4a4d52" font-weight="700">ESP-WROOM-32</text>`
+  s += `<rect x="${bx + 95}" y="${by + bh - 32}" width="60" height="32" rx="4" fill="#b9bcc2" stroke="#7e8288"/><text x="${bx + 125}" y="${by + bh - 11}" text-anchor="middle" font-size="10" fill="#333">USB</text>`
+  s += `<rect x="${bx + 38}" y="${by + bh - 62}" width="26" height="16" rx="2" fill="#2b2b2b"/><text x="${bx + 51}" y="${by + bh - 36}" text-anchor="middle" font-size="9" fill="#9aa0a8">EN</text>`
+  s += `<rect x="${bx + 186}" y="${by + bh - 62}" width="26" height="16" rx="2" fill="#2b2b2b"/><text x="${bx + 199}" y="${by + bh - 36}" text-anchor="middle" font-size="9" fill="#9aa0a8">BOOT</text>`
+  for (const [list, px, left] of [[LEFT, bx + 16, true], [RIGHT, bx + bw - 16, false]]) {
+    list.forEach((nm, i) => {
+      const y = by + top + i * pitch
+      const n = use[nm], on = n !== undefined
+      s += `<rect x="${px - 8}" y="${y - 8}" width="16" height="16" fill="#2a2a2a" stroke="#000"/><rect x="${px - 3}" y="${y - 3}" width="6" height="6" fill="#d4af37"/>`
+      const lx = left ? px + 16 : px - 16
+      s += `<text x="${lx}" y="${y + 4}" text-anchor="${left ? 'start' : 'end'}" font-size="11.5" font-weight="${on ? 700 : 500}" fill="${on ? '#ffffff' : BAD.has(nm) ? '#e07b6f' : '#7d838b'}" ${MONO}>${nm}</text>`
+      if (BAD.has(nm)) s += `<text x="${left ? px - 30 : px + 30}" y="${y + 4}" text-anchor="middle" font-size="12" font-weight="700" fill="#c0392b">✕</text>`
+      if (on) {
+        const tx = left ? px - 70 : px + 70
+        s += `<circle cx="${px}" cy="${y}" r="10" fill="none" stroke="#ffd84d" stroke-width="2.5"/>`
+        s += `<line x1="${left ? px - 10 : px + 10}" y1="${y}" x2="${left ? tx + 13 : tx - 13}" y2="${y}" stroke="${tag[n]}" stroke-width="3"/>`
+        s += `<circle cx="${tx}" cy="${y}" r="13" fill="${tag[n]}"/><text x="${tx}" y="${y + 4.5}" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">${n === 'g' ? '⏚' : n}</text>`
+      }
+    })
+  }
+  s += `<text x="20" y="${bh + 36}" font-size="12" fill="#4d4d4d">✕ = 부팅 핀, 비워 둔다 · ⏚ = GND (빵판 − 줄로) · 번호 = 아래 장면</text></svg>`
+  document.getElementById('overview').innerHTML = s
+})()
+
+const KEY = 'gyeote.wiring.checks'
+let saved = {}
+try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') } catch {}
+document.querySelectorAll('.checks input').forEach((c) => {
+  c.checked = !!saved[c.id]
+  c.addEventListener('change', () => { saved[c.id] = c.checked; try { localStorage.setItem(KEY, JSON.stringify(saved)) } catch {} })
+})
+</script>
