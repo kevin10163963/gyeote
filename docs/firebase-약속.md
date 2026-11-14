@@ -11,6 +11,7 @@ REST로 쓸 때 시각 자리에 `{".sv":"timestamp"}` 를 넣으면 서버가 �
     level      : 0 | 1 | 2         ← 0 정상, 1 주의(노랑), 2 위험(빨강). 무활동 판단 결과
     nightMode  : true | false      ← 밤이라 무활동 경고를 끈 상태
     heartbeat  : 1794620000000     ← 10초마다 서버 시각. 가족 화면은 30초 넘게 안 바뀌면 "기기 연결 끊김"
+    fallCountdownUntil : 1794620010000  ← (선택) 낙상 감지 순간 = 서버시각+10초. 카운트다운이 끝나거나 [괜찮아요]면 지운다(null). 가족 화면에 카운트다운이 보인다
   alert                            ← 지금 울리고 있는 경보 (하나만). 없으면 type 을 "none"
     type  : "none" | "sos" | "fall" | "inactive"
     at    : 1794620000000
@@ -33,6 +34,7 @@ REST로 쓸 때 시각 자리에 `{".sv":"timestamp"}` 를 넣으면 서버가 �
 | 무활동 주의/위험 | `status/level` = 1 또는 2, `events` 에 inactive_warn / inactive_alert. 위험이면 `alert` = {type:"inactive", at, acked:false} |
 | 다시 움직임 | `status/level` = 0 |
 | SOS 버튼 | `alert` = {type:"sos", at, acked:false}, `events` 에 sos |
+| 낙상 감지 순간 | (선택) `status/fallCountdownUntil` = 지금+10초 |
 | 낙상 (10초 카운트다운 끝) | `alert` = {type:"fall", at, acked:false}, `events` 에 fall. [괜찮아요] 누르면 `events` 에 fall_cancel 만 |
 | 약통 열림 (시간 창 안) | `meds/날짜/morning` = {taken:true, at}, `events` 에 med_taken |
 | 10초마다 | `status/heartbeat` = 서버 시각 |
