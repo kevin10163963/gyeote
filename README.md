@@ -12,3 +12,11 @@ npm install
 echo "VITE_FIREBASE_DB_URL=https://<프로젝트>.firebasedatabase.app" > .env.local
 npm run dev
 ```
+
+## 다시 올리기
+
+```bash
+./deploy.sh
+```
+
+주소: https://kevin10163963.github.io/gyeote/ (시연용: 끝에 `?demo`)
